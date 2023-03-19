@@ -190,7 +190,7 @@ public class MyUI extends JFrame {
     @Test
     public void dataInjection() {
         //获取所有显卡
-        alldevs = new NetworkCard().getAlldevs();
+        alldevs = new NetworkCard().getAllDevice();
         //动态初始化条目
         jMenuItems = new JMenuItem[alldevs.size()];
         int i = 0;

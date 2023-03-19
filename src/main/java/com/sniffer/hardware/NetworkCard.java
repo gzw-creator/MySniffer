@@ -9,22 +9,23 @@ import java.util.List;
 
 
 public class NetworkCard {
-    //所有网卡列表
-    List<PcapIf> alldevs = new ArrayList<PcapIf>();
-    //报错信息
-    StringBuilder errbuf = new StringBuilder();
+    //networkCard list
+    List<PcapIf> allDevice = new ArrayList<PcapIf>();
 
+    StringBuilder errInfo = new StringBuilder();
+
+    //Test whether my network card can be detected
     @Test
-    public List<PcapIf> getAlldevs() {
-        //读取网卡
-        int r = Pcap.findAllDevs(alldevs, errbuf);
-        //判断是否读取成功
-        if (r == Pcap.NOT_OK || alldevs.isEmpty()) {
-            System.err.printf("Can’t read list of devices, error is %s", errbuf.toString());
-            return alldevs;
+    public List<PcapIf> getAllDevice() {
+        //get card info
+        int r = Pcap.findAllDevs(allDevice, errInfo);
+
+        if (r == Pcap.NOT_OK || allDevice.isEmpty()) {
+            System.err.printf("Can’t read list of devices, error is %s", errInfo.toString());
+            return allDevice;
         }
         System.out.println("Network devices found:");
-        return alldevs;
+        return allDevice;
     }
 }
 
