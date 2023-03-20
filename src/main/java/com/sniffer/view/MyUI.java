@@ -58,7 +58,7 @@ public class MyUI extends JFrame {
     //UI部分
     public MyUI() {
         //标题设置
-        this.setTitle("网络嗅探器1.3");
+        this.setTitle("网络嗅探器");
         //起始坐标、长宽
         this.setBounds(250, 150, 900, 600);
         //菜单条
@@ -181,7 +181,7 @@ public class MyUI extends JFrame {
 
     ///////////////////////////////////////////////////////////////////////////////////////
     //所有网卡列表
-    List<PcapIf> alldevs;
+    List<PcapIf> allDevice;
     //抓包类
     PackageCatcher packageCatcher;
 
@@ -190,12 +190,12 @@ public class MyUI extends JFrame {
     @Test
     public void dataInjection() {
         //获取所有显卡
-        alldevs = new NetworkCard().getAllDevice();
+        allDevice = new NetworkCard().getAllDevice();
         //动态初始化条目
-        jMenuItems = new JMenuItem[alldevs.size()];
+        jMenuItems = new JMenuItem[allDevice.size()];
         int i = 0;
         //遍历网卡：显示网卡编号和描述信息
-        for (PcapIf device : alldevs) {
+        for (PcapIf device : allDevice) {
             String description = (device.getDescription() != null) ? device.getDescription()
                     : "No description available";
             jMenuItems[i] = new JMenuItem("#" + i + ": " + device.getName() + "["
@@ -210,7 +210,7 @@ public class MyUI extends JFrame {
         packageCatcher = new PackageCatcher();
         //初始化处理器信息
         infoHandle = new InfoHandle();
-        infoHandle.setTablemodel(tableModel);
+        infoHandle.setTableModel(tableModel);
         //item1绑定事件
         item1.addActionListener(
                 new ActionListener() {
@@ -273,7 +273,7 @@ public class MyUI extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         String fsip = JOptionPane.showInputDialog("请输入源IP，以筛选数据包：");
                         if (fsip == null) fsip = "";
-                        infoHandle.setFilterSrcip(fsip);
+                        infoHandle.setFilterSrcIp(fsip);
                         infoHandle.ShowAfterFilter();
                     }
                 });
@@ -282,7 +282,7 @@ public class MyUI extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         String fdip = JOptionPane.showInputDialog("请输入目的IP，以筛选数据包：");
                         if (fdip == null) fdip = "";
-                        infoHandle.setFilterDesip(fdip);
+                        infoHandle.setFilterDesIp(fdip);
                         infoHandle.ShowAfterFilter();
                     }
                 });
@@ -334,7 +334,7 @@ public class MyUI extends JFrame {
                                     DateFormat df = new SimpleDateFormat("HH点mm秒ss");
                                     String name = df.format(date);
                                     try {
-                                        FileOutputStream fos = new FileOutputStream("C:\\Users\\程哥哥\\Desktop\\临时文件\\软件系统与安全\\My_Net_Sniffer\\" + name + ".txt");
+                                        FileOutputStream fos = new FileOutputStream("..\\..\\" + name + ".txt");
                                         fos.write(text.getBytes());
                                         fos.close();
                                     } catch (Exception e) {
@@ -348,10 +348,10 @@ public class MyUI extends JFrame {
                     frame.setVisible(true);
                     frame.setResizable(false);
                     //获取数据包
-                    ArrayList<PcapPacket> packetlist = infoHandle.analyzePacketlist;
+                    ArrayList<PcapPacket> packetList = infoHandle.analyzePacketList;
                     //获得分析后的信息
                     Map<String, String> hm = new HashMap<String, String>();
-                    PcapPacket packet = packetlist.get(row);
+                    PcapPacket packet = packetList.get(row);
                     PackageAnalyzer packageAnalyzer = new PackageAnalyzer(packet);
                     hm = packageAnalyzer.Analyzed();
                     info.append("                               " + hm.get("协议") + "数据包" + "                               \n");
@@ -431,7 +431,7 @@ public class MyUI extends JFrame {
     }
 
     //表示整个抓包进程
-    Thread capthread = null;
+    Thread capThread = null;
 
     //为每张网卡绑定响应事件
     private class CardActionListener implements ActionListener {
@@ -442,19 +442,25 @@ public class MyUI extends JFrame {
         }
 
         public void actionPerformed(ActionEvent e) {
-            if (capthread == null) {
+            if (capThread == null) {
                 packageCatcher.setDevice(device);
-                packageCatcher.setHandlerInfo(infoHandle);
-                capthread = new Thread(packageCatcher);
-                capthread.start();   //开启抓包线程
+                packageCatcher.setInfoHandle(infoHandle);
+                capThread = new Thread(packageCatcher);
+                capThread.start();   //开启抓包线程
             } else {
                 packageCatcher.setDevice(device);
-                infoHandle.clearAllpackets();
+                infoHandle.clearAllPackets();
                 while (tableModel.getRowCount() > 0) {
                     tableModel.removeRow(tableModel.getRowCount() - 1);
                 }
             }
         }
     }
+
+    public static void main(String[] args) {
+        MyUI myUI = new MyUI();
+        myUI.dataInjection();
+    }
 }
+
 

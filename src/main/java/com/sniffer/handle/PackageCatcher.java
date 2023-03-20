@@ -1,11 +1,14 @@
 package com.sniffer.handle;
 
 import com.sniffer.handle.InfoHandle;
+import lombok.Getter;
+import lombok.Setter;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
 
-
+@Getter
+@Setter
 public class PackageCatcher implements Runnable {
     //要抓包的设备
     private PcapIf device;
@@ -23,22 +26,6 @@ public class PackageCatcher implements Runnable {
         this.infoHandle = infoHandle;
     }
 
-    public PcapIf getDevice() {
-        return device;
-    }
-
-    public void setDevice(PcapIf device) {
-        this.device = device;
-    }
-
-    public InfoHandle getInfoHandle() {
-        return infoHandle;
-    }
-
-    public void setHandlerInfo(InfoHandle infoHandle) {
-        this.infoHandle = infoHandle;
-    }
-
     //休眠50ms
     public void sleep(){
         try {
@@ -51,15 +38,15 @@ public class PackageCatcher implements Runnable {
     @Override
     public void run() {
         //截断此大小的数据包
-        int snaplen = Pcap.DEFAULT_JPACKET_BUFFER_SIZE;
-        //网卡模式
-        int promiscous = Pcap.MODE_PROMISCUOUS;
+        int snapLen = Pcap.DEFAULT_JPACKET_BUFFER_SIZE;
+        //网卡模式：混杂模式
+        int promiscuous = Pcap.MODE_PROMISCUOUS;
         //以毫秒为单位
         int timeout = 60 * 1000;
         //如果发生错误，它将保存一个错误字符串。 错误打开 Live 将返回 null
         StringBuilder errbuf = new StringBuilder();
         //抓包开启
-        pcap = Pcap.openLive(device.getName(), snaplen, promiscous, timeout, errbuf);
+        pcap = Pcap.openLive(device.getName(), snapLen, promiscuous, timeout, errbuf);
         if (pcap == null) {
             System.err.println("获取数据包失败：" + errbuf.toString());
             return;
@@ -69,7 +56,7 @@ public class PackageCatcher implements Runnable {
         // 捕获数据包计数
         int cnt = 1;
         //我们要发送到处理程序的自定义对象
-        String user = "程哥哥";
+//        String user = "程哥哥";
         while (true) {
             //设置抓包速率与间隔
             long startTime = System.currentTimeMillis();
@@ -82,7 +69,7 @@ public class PackageCatcher implements Runnable {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            System.out.println("list的大小为：" + infoHandle.packetlist.size());
+            System.out.println("list的大小为：" + infoHandle.packetList.size());
         }
 //        pcap.close();
     }

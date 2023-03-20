@@ -8,8 +8,8 @@ import java.util.HashMap;
 public class FilterUtils {
 
     //设置过滤规则
-    public static boolean IsFilter(PcapPacket packet, String FilterProtocol, String FilterSrcip,
-                                   String FilterDesip, String FilterKey) {
+    public static boolean IsFilter(PcapPacket packet, String FilterProtocol, String FilterSrcIp,
+                                   String FilterDesIp, String FilterKey) {
         HashMap<String, String> hm = new PackageAnalyzer(packet).Analyzed();
         //协议过滤
         if (FilterProtocol.equals("Ethernet II")) {
@@ -44,14 +44,14 @@ public class FilterUtils {
 
         }
         //源ip地址过滤
-        if (!FilterSrcip.equals("")) {
-            if (!(hm.get("源IP4").equals(FilterSrcip) || hm.get("源IP6").equals(FilterSrcip))) {
+        if (!FilterSrcIp.equals("")) {
+            if (!(hm.get("源IP4").equals(FilterSrcIp) || hm.get("源IP6").equals(FilterSrcIp))) {
                 return false;
             }
         }
         //目的ip地址过滤
-        if (!FilterDesip.equals("")) {
-            if (!(hm.get("目的IP4").equals(FilterDesip) || hm.get("目的IP6").equals(FilterDesip))) {
+        if (!FilterDesIp.equals("")) {
+            if (!(hm.get("目的IP4").equals(FilterDesIp) || hm.get("目的IP6").equals(FilterDesIp))) {
                 return false;
             }
         }

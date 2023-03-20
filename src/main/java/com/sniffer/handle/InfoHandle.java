@@ -2,6 +2,7 @@ package com.sniffer.handle;
 
 import com.sniffer.handle.PackageAnalyzer;
 import com.sniffer.utils.FilterUtils;
+
 import org.jnetpcap.packet.PcapPacket;
 
 import javax.swing.table.DefaultTableModel;
@@ -16,9 +17,9 @@ public class InfoHandle {
     //过滤协议
     public static String FilterProtocol = "";
     //过滤源IP
-    public static String FilterSrcip = "";
+    public static String FilterSrcIp = "";
     //过滤目的IP
-    public static String FilterDesip = "";
+    public static String FilterDesIp = "";
     //过滤关键字
     public static String FilterKey = "";
     //跟踪IP
@@ -26,22 +27,22 @@ public class InfoHandle {
     //跟踪端口
     public static String TracePort = "";
     //抓到的包存储
-    public static ArrayList<PcapPacket> packetlist = new ArrayList<PcapPacket>();
+    public static ArrayList<PcapPacket> packetList = new ArrayList<PcapPacket>();
     //抓到的包分析
-    public static ArrayList<PcapPacket> analyzePacketlist = new ArrayList<PcapPacket>();
+    public static ArrayList<PcapPacket> analyzePacketList = new ArrayList<PcapPacket>();
     //UI表模型
-    public static DefaultTableModel tablemodel;
+    public static DefaultTableModel tableModel;
 
     public static void setFilterProtocol(String filterProtocol) {
         FilterProtocol = filterProtocol;
     }
 
-    public static void setFilterSrcip(String filterSrcip) {
-        FilterSrcip = filterSrcip;
+    public static void setFilterSrcIp(String FilterSrcIp) {
+        FilterSrcIp = FilterSrcIp;
     }
 
-    public static void setFilterDesip(String filterDesip) {
-        FilterDesip = filterDesip;
+    public static void setFilterDesIp(String FilterDesIp) {
+        FilterDesIp = FilterDesIp;
     }
 
     public static void setFilterKey(String filterKey) {
@@ -56,28 +57,28 @@ public class InfoHandle {
         TracePort = tracePort;
     }
 
-    public static void setTablemodel(DefaultTableModel tablemodel) {
-        InfoHandle.tablemodel = tablemodel;
+    public static void setTableModel(DefaultTableModel tableModel) {
+        InfoHandle.tableModel = tableModel;
     }
 
     //将list集合清除
-    public void clearAllpackets() {
-        packetlist.clear();
-        analyzePacketlist.clear();
+    public void clearAllPackets() {
+        packetList.clear();
+        analyzePacketList.clear();
     }
 
     //过滤后数据包重新显示
     public static void ShowAfterFilter() {
         FilterUtils filterUtils = new FilterUtils();
-        while (tablemodel.getRowCount() > 0) {
-            tablemodel.removeRow(tablemodel.getRowCount() - 1);
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(tableModel.getRowCount() - 1);
         }
-        analyzePacketlist.clear();
-        for (int i = 0; i < packetlist.size(); i++) {
-            if (filterUtils.IsFilter(packetlist.get(i), FilterProtocol, FilterSrcip, FilterDesip, FilterKey)
-                    && filterUtils.Istrace(packetlist.get(i), TraceIP, TracePort)) {
-                analyzePacketlist.add(packetlist.get(i));
-                showTable(packetlist.get(i));
+        analyzePacketList.clear();
+        for (int i = 0; i < packetList.size(); i++) {
+            if (filterUtils.IsFilter(packetList.get(i), FilterProtocol, FilterSrcIp, FilterDesIp, FilterKey)
+                    && filterUtils.Istrace(packetList.get(i), TraceIP, TracePort)) {
+                analyzePacketList.add(packetList.get(i));
+                showTable(packetList.get(i));
             }
         }
     }
@@ -85,7 +86,7 @@ public class InfoHandle {
     //将抓到包的信息添加到列表
     public static void showTable(PcapPacket packet) {
         String[] rowData = getObj(packet);
-        tablemodel.addRow(rowData);
+        tableModel.addRow(rowData);
     }
 
     //将抓的包的基本信息显示在列表上，返回信息的String[]形式

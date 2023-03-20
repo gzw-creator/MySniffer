@@ -1,4 +1,5 @@
 package com.sniffer.mysniffer;
+import com.sniffer.view.MyUI;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
@@ -13,6 +14,7 @@ public class MySnifferApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MySnifferApplication.class, args);
+
 //        System.out.println(System.getProperty("java.library.path"));
 //        List<PcapIf> devs = new ArrayList<PcapIf>();
 //        StringBuilder errsb = new StringBuilder();
