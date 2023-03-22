@@ -1,6 +1,5 @@
 package com.sniffer.handle;
 
-import com.sniffer.handle.InfoHandle;
 import lombok.Getter;
 import lombok.Setter;
 import org.jnetpcap.Pcap;
@@ -19,20 +18,6 @@ public class PackageCatcher implements Runnable {
     static Pcap pcap;
 
     public PackageCatcher() {
-    }
-
-    public PackageCatcher(PcapIf device, InfoHandle infoHandle) {
-        this.device = device;
-        this.infoHandle = infoHandle;
-    }
-
-    //休眠50ms
-    public void sleep(){
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -55,23 +40,11 @@ public class PackageCatcher implements Runnable {
         MyPcapHandler<Object> myPcapHandler = new MyPcapHandler<Object>();
         // 捕获数据包计数
         int cnt = 1;
-        //我们要发送到处理程序的自定义对象
-//        String user = "程哥哥";
         while (true) {
-            //设置抓包速率与间隔
-            long startTime = System.currentTimeMillis();
-//            while (startTime + 1000 >= System.currentTimeMillis()) {
             //每个数据包将被分派到抓包处理器Handler
             pcap.loop(cnt, myPcapHandler, infoHandle);
-//            }
-//            try {
-//                Thread.sleep(0);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             System.out.println("list的大小为：" + infoHandle.packetList.size());
         }
-//        pcap.close();
     }
 }
 

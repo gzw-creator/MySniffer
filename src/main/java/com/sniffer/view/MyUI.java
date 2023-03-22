@@ -4,6 +4,7 @@ import com.sniffer.handle.PackageAnalyzer;
 import com.sniffer.handle.PackageCatcher;
 import com.sniffer.handle.InfoHandle;
 import com.sniffer.hardware.NetworkCard;
+
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.protocol.lan.Ethernet;
@@ -17,6 +18,7 @@ import org.jnetpcap.protocol.tcpip.Udp;
 import org.junit.Test;
 
 import javax.swing.*;
+import javax.swing.plaf.metal.MetalPopupMenuSeparatorUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -31,13 +33,17 @@ public class MyUI extends JFrame {
     //菜单条
     JMenuBar jMenuBar;
     //菜单
-    JMenu jMenu1, jMenu2;
+    JMenu jMenu1, jMenu2, jMenu3, jMenu4;
     //菜单项
     JMenuItem[] jMenuItems;
-    //菜单条目
+    //协议过滤菜单条目
     JMenuItem item1, item2, item3, item4, item5, item6, item7;
-    //原地址、目的地址、搜索地址按钮
-    JButton srcButton, desButton, searchButton, trackButton;
+    //端口过滤菜单条目
+    JMenuItem item11, item12;
+    //IP过滤菜单条目
+    JMenuItem item21, item22;
+    //流追踪、重置
+    JButton trackButton, resetButton;
     //容器
     JPanel jPanel;
     //滚动条
@@ -71,7 +77,16 @@ public class MyUI extends JFrame {
         jMenu2 = new JMenu("  协议  ");
         //设置字体
         jMenu2.setFont(new Font("", Font.BOLD, 20));
-        item1 = new JMenuItem(" Ethernet II ");
+        //根据端口过滤
+        jMenu3 = new JMenu("  端口  ");
+        //设置字体
+        jMenu3.setFont(new Font("", Font.BOLD, 20));
+        //根据端口过滤
+        jMenu4 = new JMenu("  ip  ");
+        //设置字体
+        jMenu4.setFont(new Font("", Font.BOLD, 20));
+
+        item1 = new JMenuItem(" Ethernet ");
         //设置字体
         item1.setFont(new Font("", Font.BOLD, 20));
         item2 = new JMenuItem(" IP ");
@@ -92,7 +107,7 @@ public class MyUI extends JFrame {
         item7 = new JMenuItem(" HTTP ");
         //设置字体
         item7.setFont(new Font("", Font.BOLD, 20));
-        //加入菜单选项
+        //加入协议过滤菜单选项
         jMenu2.add(item1);
         jMenu2.add(item2);
         jMenu2.add(item3);
@@ -100,29 +115,43 @@ public class MyUI extends JFrame {
         jMenu2.add(item5);
         jMenu2.add(item6);
         jMenu2.add(item7);
-        //根据源ip地址过滤
-        srcButton = new JButton(" 源IP ");
-        //设置字体
-        srcButton.setFont(new Font("", Font.BOLD, 20));
-        //根据目的ip地址过滤
-        desButton = new JButton(" 目的IP ");
-        //设置字体
-        desButton.setFont(new Font("", Font.BOLD, 20));
-        //根据关键字进行过滤
-        searchButton = new JButton(" 查找  ");
-        //设置字体
-        searchButton.setFont(new Font("", Font.BOLD, 20));
+
+        item11 = new JMenuItem(" 源端口 ");
+        item11.setFont(new Font("", Font.BOLD, 20));
+
+        item12 = new JMenuItem(" 目的端口 ");
+        item12.setFont(new Font("", Font.BOLD, 20));
+        //加入端口过滤菜单选项
+        jMenu3.add(item11);
+        jMenu3.add(item12);
+
+        item21 = new JMenuItem(" 源IP地址 ");
+        item21.setFont(new Font("", Font.BOLD, 20));
+
+        item22 = new JMenuItem(" 目的IP地址 ");
+        item22.setFont(new Font("", Font.BOLD, 20));
+
+        //加入IP地址过滤菜单选项
+        jMenu4.add(item21);
+        jMenu4.add(item22);
+
+
         //tcp+port流追踪
         trackButton = new JButton(" IP+Port流追踪  ");
         //设置字体
         trackButton.setFont(new Font("", Font.BOLD, 20));
+        //重置按钮
+        resetButton = new JButton(" Reset  ");
+        //设置字体
+        resetButton.setFont(new Font("", Font.BOLD, 20));
+
         //将菜单添加到菜单条上
         jMenuBar.add(jMenu1);
         jMenuBar.add(jMenu2);
-        jMenuBar.add(srcButton);
-        jMenuBar.add(desButton);
-        jMenuBar.add(searchButton);
+        jMenuBar.add(jMenu3);
+        jMenuBar.add(jMenu4);
         jMenuBar.add(trackButton);
+        jMenuBar.add(resetButton);
         //菜单条设置
         setJMenuBar(jMenuBar);
         //表设置
@@ -156,6 +185,7 @@ public class MyUI extends JFrame {
         //启动布局管理器
         jTable.doLayout();
         //新建滚动条
+        jTable.scrollRectToVisible(jTable.getCellRect(jTable.getRowCount()-1,0,true));
         jScrollPane = new JScrollPane(jTable);
         //网格布局
         jPanel = new JPanel(new GridLayout(0, 1));
@@ -268,7 +298,27 @@ public class MyUI extends JFrame {
                         infoHandle.ShowAfterFilter();
                     }
                 });
-        srcButton.addActionListener(
+        item11.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e3) {
+                        String srcPort = JOptionPane.showInputDialog("请输入源端口，以筛选数据包：");
+                        if (srcPort == null) srcPort = "";
+                        infoHandle.setFilterSrcPort(srcPort);
+                        infoHandle.ShowAfterFilter();
+                    }
+                });
+        item12.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e3) {
+                        String desPort = JOptionPane.showInputDialog("请输入目的端口，以筛选数据包：");
+                        if (desPort == null) desPort = "";
+                        infoHandle.setFilterDesPort(desPort);
+                        infoHandle.ShowAfterFilter();
+                    }
+                });
+        item21.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         String fsip = JOptionPane.showInputDialog("请输入源IP，以筛选数据包：");
@@ -277,7 +327,7 @@ public class MyUI extends JFrame {
                         infoHandle.ShowAfterFilter();
                     }
                 });
-        desButton.addActionListener(
+        item22.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         String fdip = JOptionPane.showInputDialog("请输入目的IP，以筛选数据包：");
@@ -286,23 +336,41 @@ public class MyUI extends JFrame {
                         infoHandle.ShowAfterFilter();
                     }
                 });
-        searchButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        String fkeyword = JOptionPane.showInputDialog("请输入数据关键字，以筛选数据包：");
-                        if (fkeyword == null) fkeyword = "";
-                        infoHandle.setFilterKey(fkeyword);
-                        infoHandle.ShowAfterFilter();
-                    }
-                });
         trackButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        String ip_port = JOptionPane.showInputDialog("请输入要追踪的IP地址和Port端口(输入数据格式为 IP地址:Port端口)，以追踪TCP流：");
-                        if (ip_port == null || ip_port.equals("")) ip_port = ":";
-                        String[] str = ip_port.split(":");
-                        infoHandle.setTraceIP(str[0]);
-                        infoHandle.setTracePort(str[1]);
+                        JTextField ipField = new JTextField(20);
+                        JTextField portField = new JTextField(20);
+
+                        JPanel myPanel = new JPanel();
+                        myPanel.add(new JLabel("ip:"));
+                        myPanel.add(ipField);
+                        myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+                        myPanel.add(new JLabel("port:"));
+                        myPanel.add(portField);
+
+                        int result = JOptionPane.showConfirmDialog(null, myPanel,
+                                "Please Enter ip and port Values", JOptionPane.OK_CANCEL_OPTION);
+                        String ip="",port="";
+                        if (result == JOptionPane.OK_OPTION) {
+                            ip = ipField.getText();
+                            port = portField.getText();
+                        }
+                        infoHandle.setTraceIP(ip);
+                        infoHandle.setTracePort(port);
+                        infoHandle.ShowAfterFilter();
+                    }
+                });
+        resetButton.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        infoHandle.setTraceIP("");
+                        infoHandle.setTracePort("");
+                        infoHandle.setFilterSrcPort("");
+                        infoHandle.setFilterDesPort("");
+                        infoHandle.setFilterProtocol("");
+                        infoHandle.setFilterDesIp("");
+                        infoHandle.setFilterSrcIp("");
                         infoHandle.ShowAfterFilter();
                     }
                 });
@@ -423,7 +491,7 @@ public class MyUI extends JFrame {
                     }
 
                     info.append("------------------------------------------------------------------------------\n");
-                    info.append("原始数据包内容" + " : " + hm.get("包内容") + "\n");
+                    info.append("原始数据包内容" + " : \n" + hm.get("包内容") + "\n");
                 }
             }
         });
@@ -432,7 +500,6 @@ public class MyUI extends JFrame {
 
     //表示整个抓包进程
     Thread capThread = null;
-
     //为每张网卡绑定响应事件
     private class CardActionListener implements ActionListener {
         PcapIf device;

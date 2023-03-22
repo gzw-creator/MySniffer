@@ -1,17 +1,13 @@
 package com.sniffer.handle;
 
-import com.sniffer.handle.PackageAnalyzer;
 import com.sniffer.utils.FilterUtils;
-
 import org.jnetpcap.packet.PcapPacket;
-
 import javax.swing.table.DefaultTableModel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
 
 public class InfoHandle {
     //过滤协议
@@ -20,8 +16,10 @@ public class InfoHandle {
     public static String FilterSrcIp = "";
     //过滤目的IP
     public static String FilterDesIp = "";
-    //过滤关键字
-    public static String FilterKey = "";
+    //过滤目的端口
+    public static String FilterDesPort = "";
+    //过滤源端口
+    public static String FilterSrcPort = "";
     //跟踪IP
     public static String TraceIP = "";
     //跟踪端口
@@ -40,19 +38,20 @@ public class InfoHandle {
     public static void setFilterSrcIp(String filterSrcIp) {
         FilterSrcIp = filterSrcIp;
     }
-
     public static void setFilterDesIp(String filterDesIp) {
         FilterDesIp = filterDesIp;
     }
 
-    public static void setFilterKey(String filterKey) {
-        FilterKey = filterKey;
+    public static void setFilterSrcPort(String filterSrcPort) {
+        FilterSrcPort = filterSrcPort;
+    }
+    public static void setFilterDesPort(String filterDesPort) {
+        FilterDesPort = filterDesPort;
     }
 
     public static void setTraceIP(String traceIP) {
         TraceIP = traceIP;
     }
-
     public static void setTracePort(String tracePort) {
         TracePort = tracePort;
     }
@@ -75,7 +74,7 @@ public class InfoHandle {
         }
         analyzePacketList.clear();
         for (int i = 0; i < packetList.size(); i++) {
-            if (filterUtils.IsFilter(packetList.get(i), FilterProtocol, FilterSrcIp, FilterDesIp, FilterKey)
+            if (filterUtils.IsFilter(packetList.get(i), FilterProtocol, FilterSrcIp, FilterDesIp,FilterSrcPort, FilterDesPort)
                     && filterUtils.IsTrace(packetList.get(i), TraceIP, TracePort)) {
                 analyzePacketList.add(packetList.get(i));
                 showTable(packetList.get(i));

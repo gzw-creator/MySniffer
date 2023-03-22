@@ -1,11 +1,8 @@
 package com.sniffer.handle;
 
-import com.sniffer.handle.InfoHandle;
 import com.sniffer.utils.FilterUtils;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
-
-
 
 public class MyPcapHandler<Object> implements PcapPacketHandler<Object> {
     FilterUtils filterUtils;
@@ -16,7 +13,7 @@ public class MyPcapHandler<Object> implements PcapPacketHandler<Object> {
             //抓到的所有包都放入
             Info.packetList.add(packet);
             //符合条件的包放入
-            if(filterUtils.IsFilter(packet, Info.FilterProtocol, Info.FilterSrcIp, Info.FilterDesIp, Info.FilterKey)&&
+            if(filterUtils.IsFilter(packet, Info.FilterProtocol, Info.FilterSrcIp, Info.FilterDesIp,Info.FilterSrcPort,Info.FilterDesPort)&&
                     filterUtils.IsTrace(packet, Info.TraceIP, Info.TracePort)){
                 Info.analyzePacketList.add(packet);
                 Info.showTable(packet);

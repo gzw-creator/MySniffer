@@ -1,7 +1,10 @@
 package com.sniffer.handle;
+import org.jnetpcap.Pcap;
 import org.jnetpcap.nio.JBuffer;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.format.FormatUtils;
+import org.jnetpcap.PcapDumper;
+import org.jnetpcap.packet.JPacket;
 import org.jnetpcap.protocol.JProtocol;
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Arp;
@@ -13,11 +16,8 @@ import org.jnetpcap.protocol.tcpip.Http;
 import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -54,10 +54,10 @@ public class PackageAnalyzer {
         String srcIG = Long.toString(eth.source_IG());//0为单播，1为广播
         String destLG = Long.toString(eth.destination_LG());//0为出厂MAC，1为分配的MAC
         String destIG = Long.toString(eth.destination_IG());//0为单播，1为广播
-        analyzeResult.put("源MAC地址类型", srcLG=="0"?"出厂MAC":"分配的MAC");
-        analyzeResult.put("目的MAC地址类型", destLG=="0"?"出厂MAC":"分配的MAC");
-        analyzeResult.put("源主机传播方式", srcIG=="0"?"单播":"广播");
-        analyzeResult.put("目的主机传播方式", destIG=="0"?"单播":"广播");
+        analyzeResult.put("源MAC地址类型", srcLG.equals("0") ?"出厂MAC":"分配的MAC");
+        analyzeResult.put("目的MAC地址类型", destLG.equals("0") ?"出厂MAC":"分配的MAC");
+        analyzeResult.put("源主机传播方式", srcIG.equals("0") ?"单播":"广播");
+        analyzeResult.put("目的主机传播方式", destIG.equals("0") ?"单播":"广播");
         analyzeResult.put("是否有其他切片","未知");
         handleSrcIp();
         handleDestIp();
@@ -78,6 +78,7 @@ public class PackageAnalyzer {
         boolean ifUseHttp = packet.hasHeader(http);
         analyzeResult.put("是否使用http协议", String.valueOf(ifUseHttp));
         analyzeResult.put("包内容", parseData());
+//        analyzeResult.put("进程ID",);
         return analyzeResult;
     }
     //解析出源Mac地址
@@ -173,7 +174,16 @@ public class PackageAnalyzer {
     }
     //解析arp
     private static void handleArp(){
+//        if(!packet.hasHeader(JPacket.Ethernet)) {
+//            return ;
+//        }
+    }
 
+    //解析ICMP
+    private static void handleIMCP(){
+//        if(!packet.hasHeader(JPacket.Ethernet)) {
+//            return ;
+//        }
     }
     public static HashMap<String,String> fieldMap=null;
     public static ConcurrentHashMap<String,String> httpParams=null;
