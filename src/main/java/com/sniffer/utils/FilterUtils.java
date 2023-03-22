@@ -81,6 +81,27 @@ public class FilterUtils {
                 hm.get("目的端口").equals(Port)) {
             return true;
         }
+        if (hm.get("协议").equals("UDP") &&
+                (hm.get("源IP4").equals(IP) || hm.get("源IP6").equals(IP)) &&
+                hm.get("源端口").equals(Port)) {
+            return true;
+        }
+        if (hm.get("协议").equals("UDP") &&
+                (hm.get("目的IP4").equals(IP) || hm.get("目的IP6").equals(IP)) &&
+                hm.get("目的端口").equals(Port)) {
+            return true;
+        }
+        if (hm.get("协议").equals("SCTP") &&
+                (hm.get("源IP4").equals(IP) || hm.get("源IP6").equals(IP)) &&
+                hm.get("源端口").equals(Port)) {
+            return true;
+        }
+        if (hm.get("协议").equals("SCTP") &&
+                (hm.get("目的IP4").equals(IP) || hm.get("目的IP6").equals(IP)) &&
+                hm.get("目的端口").equals(Port)) {
+            return true;
+        }
+
         return false;
     }
 }

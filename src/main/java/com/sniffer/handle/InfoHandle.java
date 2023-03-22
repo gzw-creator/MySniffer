@@ -91,7 +91,7 @@ public class InfoHandle {
 
     //将抓的包的基本信息显示在列表上，返回信息的String[]形式
     public static String[] getObj(PcapPacket packet) {
-        String[] data = new String[6];
+        String[] data = new String[7];
         if (packet != null) {
             //捕获时间
             Date date = new Date(packet.getCaptureHeader().timestampInMillis());
@@ -106,8 +106,10 @@ public class InfoHandle {
             if (hm.get("目的IP4").equals("未知") && hm.get("目的IP6").equals("未知")) {
                 data[2] = hm.get("目的MAC");
             }
-            data[3] = hm.get("协议");
-            data[4] = String.valueOf(packet.getCaptureHeader().wirelen());
+            data[3] = hm.get("源端口");
+            data[4] = hm.get("目的端口");
+            data[5] = hm.get("协议");
+            data[6] = String.valueOf(packet.getCaptureHeader().wirelen());
         }
         return data;
     }

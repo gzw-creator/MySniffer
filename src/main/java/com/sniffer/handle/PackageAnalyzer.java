@@ -8,6 +8,7 @@ import org.jnetpcap.protocol.network.Arp;
 import org.jnetpcap.protocol.network.Icmp;
 import org.jnetpcap.protocol.network.Ip4;
 import org.jnetpcap.protocol.network.Ip6;
+import org.jnetpcap.protocol.sigtran.Sctp;
 import org.jnetpcap.protocol.tcpip.Http;
 import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
@@ -30,6 +31,7 @@ public class PackageAnalyzer {
     private static Udp udp = new Udp();
     private static Tcp tcp = new Tcp();
     private static Http http = new Http();
+    private static Sctp sctp = new Sctp();
     //要分析的包
     static PcapPacket packet;
     //分析结果
@@ -139,7 +141,12 @@ public class PackageAnalyzer {
     private static String parseSrcPort() {
         if (packet.hasHeader(tcp)) {
             return String.valueOf(tcp.source());
-        }else {
+        }else if(packet.hasHeader(udp))
+        {
+            return String.valueOf(udp.source());
+        }else if(packet.hasHeader(sctp)){
+            return String.valueOf(sctp.source());
+        }else{
             return "未知";
         }
     }
@@ -147,7 +154,12 @@ public class PackageAnalyzer {
     private static String parseDesPort() {
         if (packet.hasHeader(tcp)) {
             return String.valueOf(tcp.destination());
-        }else {
+        }else if(packet.hasHeader(udp))
+        {
+            return String.valueOf(udp.destination());
+        }else if(packet.hasHeader(sctp)){
+            return String.valueOf(sctp.destination());
+        }else{
             return "未知";
         }
     }

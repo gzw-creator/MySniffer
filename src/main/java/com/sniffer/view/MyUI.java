@@ -46,7 +46,7 @@ public class MyUI extends JFrame {
     JTable jTable;
     //表头内容
     final String[] head = new String[]{
-            "时间", "源IP或源MAC", "目的IP或目的MAC", "协议", "长度"
+            "时间", "源IP或源MAC", "目的IP或目的MAC","源端口","目的端口","协议", "长度",
     };
     //表模型
     DefaultTableModel tableModel;
