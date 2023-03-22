@@ -37,12 +37,12 @@ public class InfoHandle {
         FilterProtocol = filterProtocol;
     }
 
-    public static void setFilterSrcIp(String FilterSrcIp) {
-        FilterSrcIp = FilterSrcIp;
+    public static void setFilterSrcIp(String filterSrcIp) {
+        FilterSrcIp = filterSrcIp;
     }
 
-    public static void setFilterDesIp(String FilterDesIp) {
-        FilterDesIp = FilterDesIp;
+    public static void setFilterDesIp(String filterDesIp) {
+        FilterDesIp = filterDesIp;
     }
 
     public static void setFilterKey(String filterKey) {
@@ -76,7 +76,7 @@ public class InfoHandle {
         analyzePacketList.clear();
         for (int i = 0; i < packetList.size(); i++) {
             if (filterUtils.IsFilter(packetList.get(i), FilterProtocol, FilterSrcIp, FilterDesIp, FilterKey)
-                    && filterUtils.Istrace(packetList.get(i), TraceIP, TracePort)) {
+                    && filterUtils.IsTrace(packetList.get(i), TraceIP, TracePort)) {
                 analyzePacketList.add(packetList.get(i));
                 showTable(packetList.get(i));
             }

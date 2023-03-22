@@ -65,7 +65,7 @@ public class FilterUtils {
     }
 
     //设置追踪规则
-    public static boolean Istrace(PcapPacket packet, String IP, String Port) {
+    public static boolean IsTrace(PcapPacket packet, String IP, String Port) {
         //如果是默认值，默认跟踪
         if (IP.equals("") || Port.equals("")) {
             return true;

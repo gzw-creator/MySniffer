@@ -17,7 +17,7 @@ public class MyPcapHandler<Object> implements PcapPacketHandler<Object> {
             Info.packetList.add(packet);
             //符合条件的包放入
             if(filterUtils.IsFilter(packet, Info.FilterProtocol, Info.FilterSrcIp, Info.FilterDesIp, Info.FilterKey)&&
-                    filterUtils.Istrace(packet, Info.TraceIP, Info.TracePort)){
+                    filterUtils.IsTrace(packet, Info.TraceIP, Info.TracePort)){
                 Info.analyzePacketList.add(packet);
                 Info.showTable(packet);
             }

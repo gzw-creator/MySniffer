@@ -299,7 +299,7 @@ public class MyUI extends JFrame {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         String ip_port = JOptionPane.showInputDialog("请输入要追踪的IP地址和Port端口(输入数据格式为 IP地址:Port端口)，以追踪TCP流：");
-                        if (ip_port == null || ip_port == "") ip_port = ":";
+                        if (ip_port == null || ip_port.equals("")) ip_port = ":";
                         String[] str = ip_port.split(":");
                         infoHandle.setTraceIP(str[0]);
                         infoHandle.setTracePort(str[1]);
