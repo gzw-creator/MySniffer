@@ -20,16 +20,12 @@ public class InfoHandle {
     public static String FilterDesPort = "";
     //过滤源端口
     public static String FilterSrcPort = "";
-    //跟踪IP
-    public static String TraceIP = "";
-    //跟踪端口
-    public static String TracePort = "";
     //抓到的包存储
     public static ArrayList<PcapPacket> packetList = new ArrayList<PcapPacket>();
     //抓到的包分析
     public static ArrayList<PcapPacket> analyzePacketList = new ArrayList<PcapPacket>();
     //UI表模型
-    public static DefaultTableModel tableModel;
+    public static DefaultTableModel tableModel, myTableModel;
 
     public static void setFilterProtocol(String filterProtocol) {
         FilterProtocol = filterProtocol;
@@ -49,15 +45,12 @@ public class InfoHandle {
         FilterDesPort = filterDesPort;
     }
 
-    public static void setTraceIP(String traceIP) {
-        TraceIP = traceIP;
-    }
-    public static void setTracePort(String tracePort) {
-        TracePort = tracePort;
-    }
-
     public static void setTableModel(DefaultTableModel tableModel) {
         InfoHandle.tableModel = tableModel;
+    }
+
+    public static void setMyTableModel(DefaultTableModel myTableModel) {
+        InfoHandle.myTableModel = myTableModel;
     }
 
     //将list集合清除
@@ -74,12 +67,26 @@ public class InfoHandle {
         }
         analyzePacketList.clear();
         for (int i = 0; i < packetList.size(); i++) {
-            if (filterUtils.IsFilter(packetList.get(i), FilterProtocol, FilterSrcIp, FilterDesIp,FilterSrcPort, FilterDesPort)
-                    && filterUtils.IsTrace(packetList.get(i), TraceIP, TracePort)) {
+            if (filterUtils.IsFilter(packetList.get(i), FilterProtocol, FilterSrcIp, FilterDesIp,FilterSrcPort, FilterDesPort)) {
                 analyzePacketList.add(packetList.get(i));
                 showTable(packetList.get(i));
             }
         }
+    }
+    public static void showAfterTrace(String srcIp,String desIp,String srcPort, String desPort) {
+        FilterUtils filterUtils = new FilterUtils();
+        while (myTableModel.getRowCount() > 0) {
+            myTableModel.removeRow(myTableModel.getRowCount() - 1);
+        }
+//        System.out.println("总包数："+packetList.size());
+        for (int i = 0; i < packetList.size(); i++) {
+            PcapPacket packet = packetList.get(i);
+            if (filterUtils.IsTrace(packet,srcIp, desIp,srcPort, desPort)) {
+                String[] rowData = getObj(packet);
+                myTableModel.addRow(rowData);
+            }
+        }
+//        System.out.println("总行数0："+myTableModel.getColumnCount());
     }
 
     //将抓到包的信息添加到列表
@@ -90,25 +97,30 @@ public class InfoHandle {
 
     //将抓的包的基本信息显示在列表上，返回信息的String[]形式
     public static String[] getObj(PcapPacket packet) {
-        String[] data = new String[7];
+        String[] data = new String[8];
         if (packet != null) {
             //捕获时间
-            Date date = new Date(packet.getCaptureHeader().timestampInMillis());
-            DateFormat df = new SimpleDateFormat("HH:mm:ss");
-            data[0] = df.format(date);
-            HashMap<String, String> hm = new PackageAnalyzer(packet).Analyzed();
-            data[1] = hm.get("源IP4").equals("未知") ? hm.get("源IP6") : hm.get("源IP4");
-            data[2] = hm.get("目的IP4").equals("未知") ? hm.get("目的IP6") : hm.get("目的IP4");
-            if (hm.get("源IP4").equals("未知") && hm.get("源IP6").equals("未知")) {
-                data[1] = hm.get("源MAC");
+            try{
+                Date date = new Date(packet.getCaptureHeader().timestampInMillis());
+                DateFormat df = new SimpleDateFormat("HH:mm:ss");
+                data[0] = df.format(date);
+                HashMap<String, String> hm = new PackageAnalyzer(packet).Analyzed();
+                data[1] = hm.get("源IP4").equals("未知") ? hm.get("源IP6") : hm.get("源IP4");
+                data[2] = hm.get("目的IP4").equals("未知") ? hm.get("目的IP6") : hm.get("目的IP4");
+                if (hm.get("源IP4").equals("未知") && hm.get("源IP6").equals("未知")) {
+                    data[1] = hm.get("源MAC");
+                }
+                if (hm.get("目的IP4").equals("未知") && hm.get("目的IP6").equals("未知")) {
+                    data[2] = hm.get("目的MAC");
+                }
+                data[3] = hm.get("源端口");
+                data[4] = hm.get("目的端口");
+                data[5] = hm.get("协议");
+                data[6] = String.valueOf(packet.getCaptureHeader().wirelen());
+                data[7] = hm.get("进程ID");
+            }catch (NullPointerException e){
+                e.printStackTrace();
             }
-            if (hm.get("目的IP4").equals("未知") && hm.get("目的IP6").equals("未知")) {
-                data[2] = hm.get("目的MAC");
-            }
-            data[3] = hm.get("源端口");
-            data[4] = hm.get("目的端口");
-            data[5] = hm.get("协议");
-            data[6] = String.valueOf(packet.getCaptureHeader().wirelen());
         }
         return data;
     }

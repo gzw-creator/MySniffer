@@ -1,4 +1,5 @@
 package com.sniffer.handle;
+import com.sniffer.utils.ProcessUtils;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.nio.JBuffer;
 import org.jnetpcap.packet.PcapPacket;
@@ -46,7 +47,8 @@ public class PackageAnalyzer {
     public static HashMap<String, String> Analyzed() {
         //初始化
         analyzeResult = new HashMap<String, String>();
-        analyzeResult.put("协议", parseProtocol());
+        String protocol = parseProtocol();
+        analyzeResult.put("协议", protocol);
         analyzeResult.put("发送时间", new Date(packet.getCaptureHeader().timestampInMillis()).toString());
         analyzeResult.put("源MAC", parseSrcMAC());
         analyzeResult.put("目的MAC", parseDestMac());
@@ -62,8 +64,10 @@ public class PackageAnalyzer {
         handleSrcIp();
         handleDestIp();
         analyzeResult.put("是否有其他切片", String.valueOf(ip4.isFragmented()));
-        analyzeResult.put("源端口", parseSrcPort());
-        analyzeResult.put("目的端口", parseDesPort());
+        String srcPort = parseSrcPort();
+        String desPort = parseDesPort();
+        analyzeResult.put("源端口", srcPort);
+        analyzeResult.put("目的端口", desPort);
         String ack,seq;
         if (packet.hasHeader(tcp)) {
             ack = Long.toString(tcp.ack());
@@ -78,7 +82,12 @@ public class PackageAnalyzer {
         boolean ifUseHttp = packet.hasHeader(http);
         analyzeResult.put("是否使用http协议", String.valueOf(ifUseHttp));
         analyzeResult.put("包内容", parseData());
-//        analyzeResult.put("进程ID",);
+        if(protocol.equals("TCP")){
+            analyzeResult.put("进程ID", ProcessUtils.getProcessId(protocol,srcPort,desPort));
+        }
+        else{
+            analyzeResult.put("进程ID", "-1");
+        }
         return analyzeResult;
     }
     //解析出源Mac地址
@@ -111,17 +120,22 @@ public class PackageAnalyzer {
     //ip有ip4，ip6
     //解析出源ip
     private static void handleSrcIp() {
-        analyzeResult.put("源IP4","未知");
-        analyzeResult.put("源IP6","未知");
-        analyzeResult.put("IP协议版本","未知");
-        if (packet.hasHeader(ip4)) { // 如果packet有ip头部
-            analyzeResult.put("源IP4",FormatUtils.ip(ip4.source()));
-            analyzeResult.put("IP协议版本","IPv4");
+        try{
+            analyzeResult.put("源IP4","未知");
+            analyzeResult.put("源IP6","未知");
+            analyzeResult.put("IP协议版本","未知");
+            if (packet.hasHeader(ip4)) { // 如果packet有ip头部
+                analyzeResult.put("源IP4",FormatUtils.ip(ip4.source()));
+                analyzeResult.put("IP协议版本","IPv4");
+            }
+            if (packet.hasHeader(ip6)) {
+                analyzeResult.put("源IP6",FormatUtils.ip(ip6.source()));
+                analyzeResult.put("IP协议版本","IPv6");
+            }
+        }catch (IndexOutOfBoundsException e){
+            e.printStackTrace();
         }
-        if (packet.hasHeader(ip6)) {
-            analyzeResult.put("源IP6",FormatUtils.ip(ip6.source()));
-            analyzeResult.put("IP协议版本","IPv6");
-        }
+
 
         return ;
     }
@@ -140,29 +154,35 @@ public class PackageAnalyzer {
     }
     //解析出源port
     private static String parseSrcPort() {
-        if (packet.hasHeader(tcp)) {
-            return String.valueOf(tcp.source());
-        }else if(packet.hasHeader(udp))
-        {
-            return String.valueOf(udp.source());
-        }else if(packet.hasHeader(sctp)){
-            return String.valueOf(sctp.source());
-        }else{
-            return "未知";
+        try{
+            if (packet.hasHeader(tcp)) {
+                return String.valueOf(tcp.source());
+            }else if(packet.hasHeader(udp))
+            {
+                return String.valueOf(udp.source());
+            }else if(packet.hasHeader(sctp)){
+                return String.valueOf(sctp.source());
+            }
+        }catch (IndexOutOfBoundsException e){
+            e.printStackTrace();
         }
+            return "未知";
     }
     //解析出目的port
     private static String parseDesPort() {
-        if (packet.hasHeader(tcp)) {
-            return String.valueOf(tcp.destination());
-        }else if(packet.hasHeader(udp))
-        {
-            return String.valueOf(udp.destination());
-        }else if(packet.hasHeader(sctp)){
-            return String.valueOf(sctp.destination());
-        }else{
-            return "未知";
+        try{
+            if (packet.hasHeader(tcp)) {
+                return String.valueOf(tcp.destination());
+            }else if(packet.hasHeader(udp))
+            {
+                return String.valueOf(udp.destination());
+            }else if(packet.hasHeader(sctp)){
+                return String.valueOf(sctp.destination());
+            }
+        }catch (IndexOutOfBoundsException e){
+            e.printStackTrace();
         }
+        return "未知";
     }
     //解析包内容
     private static String parseData() {

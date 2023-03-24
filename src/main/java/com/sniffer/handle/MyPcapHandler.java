@@ -13,12 +13,11 @@ public class MyPcapHandler<Object> implements PcapPacketHandler<Object> {
             //抓到的所有包都放入
             Info.packetList.add(packet);
             //符合条件的包放入
-            if(filterUtils.IsFilter(packet, Info.FilterProtocol, Info.FilterSrcIp, Info.FilterDesIp,Info.FilterSrcPort,Info.FilterDesPort)&&
-                    filterUtils.IsTrace(packet, Info.TraceIP, Info.TracePort)){
+            if(filterUtils.IsFilter(packet, Info.FilterProtocol, Info.FilterSrcIp, Info.FilterDesIp,Info.FilterSrcPort,Info.FilterDesPort)){
                 Info.analyzePacketList.add(packet);
                 Info.showTable(packet);
             }
-            System.out.println(packet);
+//            System.out.println(packet);
         }
     }
 }

@@ -43,7 +43,9 @@ public class MyUI extends JFrame {
     //IP过滤菜单条目
     JMenuItem item21, item22;
     //流追踪、重置
-    JButton trackButton, resetButton;
+    JPopupMenu popupMenu;
+    JMenuItem menuItem;
+    JButton resetButton;
     //容器
     JPanel jPanel;
     //滚动条
@@ -52,10 +54,10 @@ public class MyUI extends JFrame {
     JTable jTable;
     //表头内容
     final String[] head = new String[]{
-            "时间", "源IP或源MAC", "目的IP或目的MAC","源端口","目的端口","协议", "长度",
+            "时间", "源IP/MAC", "目的IP/MAC","源端口","目的端口","协议", "长度","进程ID"
     };
     //表模型
-    DefaultTableModel tableModel;
+    DefaultTableModel tableModel,myTableModel;
     //表内容
     Object[][] DataList = {};
     //处理信息
@@ -136,10 +138,7 @@ public class MyUI extends JFrame {
         jMenu4.add(item22);
 
 
-        //tcp+port流追踪
-        trackButton = new JButton(" IP+Port流追踪  ");
-        //设置字体
-        trackButton.setFont(new Font("", Font.BOLD, 20));
+
         //重置按钮
         resetButton = new JButton(" Reset  ");
         //设置字体
@@ -150,7 +149,7 @@ public class MyUI extends JFrame {
         jMenuBar.add(jMenu2);
         jMenuBar.add(jMenu3);
         jMenuBar.add(jMenu4);
-        jMenuBar.add(trackButton);
+
         jMenuBar.add(resetButton);
         //菜单条设置
         setJMenuBar(jMenuBar);
@@ -184,6 +183,9 @@ public class MyUI extends JFrame {
         jTable.setShowGrid(true);
         //启动布局管理器
         jTable.doLayout();
+        popupMenu = new JPopupMenu();
+        menuItem = new JMenuItem("TCP流跟踪");
+        popupMenu.add(menuItem);
         //新建滚动条
         jTable.scrollRectToVisible(jTable.getCellRect(jTable.getRowCount()-1,0,true));
         jScrollPane = new JScrollPane(jTable);
@@ -242,6 +244,29 @@ public class MyUI extends JFrame {
         infoHandle = new InfoHandle();
         infoHandle.setTableModel(tableModel);
         //item1绑定事件
+        jTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showPopup(e);
+            }
+            private void showPopup(MouseEvent e){
+                if(e.isPopupTrigger()){
+                    int row = jTable.rowAtPoint(e.getPoint());
+                    if(row!=-1){
+                        //选择该行
+                        jTable.setRowSelectionInterval(row,row);
+
+                        //弹出菜单
+                        popupMenu.show(e.getComponent(),e.getX(),e.getY());
+                    }
+                }
+            }
+        });
         item1.addActionListener(
                 new ActionListener() {
                     @Override
@@ -280,6 +305,7 @@ public class MyUI extends JFrame {
                     public void actionPerformed(ActionEvent e3) {
                         infoHandle.setFilterProtocol("UDP");
                         infoHandle.ShowAfterFilter();
+                        System.out.println("UDP");
                     }
                 });
         item6.addActionListener(
@@ -336,41 +362,38 @@ public class MyUI extends JFrame {
                         infoHandle.ShowAfterFilter();
                     }
                 });
-        trackButton.addActionListener(
+        menuItem.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        JTextField ipField = new JTextField(20);
-                        JTextField portField = new JTextField(20);
+                        int row = jTable.getSelectedRow();
+                        //获取选择行的关键信息用于跟踪
+                        String srcIp = (String) jTable.getValueAt(row,1);
+                        String desIp = (String) jTable.getValueAt(row,2);
+                        String srcPort = (String) jTable.getValueAt(row,3);
+                        String desPort = (String) jTable.getValueAt(row,4);
+                        JFrame myFrame = new JFrame("TCP流追踪数据列表");
+                        myFrame.setSize(1000,600);
+                        Object[][] myDataList = {};
+                        myTableModel = new DefaultTableModel(myDataList,head);
 
-                        JPanel myPanel = new JPanel();
-                        myPanel.add(new JLabel("ip:"));
-                        myPanel.add(ipField);
-                        myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-                        myPanel.add(new JLabel("port:"));
-                        myPanel.add(portField);
-
-                        int result = JOptionPane.showConfirmDialog(null, myPanel,
-                                "Please Enter ip and port Values", JOptionPane.OK_CANCEL_OPTION);
-                        String ip="",port="";
-                        if (result == JOptionPane.OK_OPTION) {
-                            ip = ipField.getText();
-                            port = portField.getText();
-                        }
-                        infoHandle.setTraceIP(ip);
-                        infoHandle.setTracePort(port);
-                        infoHandle.ShowAfterFilter();
+                        infoHandle.setMyTableModel(myTableModel);
+                        infoHandle.showAfterTrace(srcIp,desIp,srcPort,desPort);
+                        System.out.println("总行数："+myTableModel.getColumnCount());
+                        JTable newTable = new JTable();
+                        newTable.setModel(myTableModel);
+                        myFrame.getContentPane().add(new JScrollPane(newTable));
+                        myFrame.setVisible(true);
                     }
                 });
         resetButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        infoHandle.setTraceIP("");
-                        infoHandle.setTracePort("");
                         infoHandle.setFilterSrcPort("");
                         infoHandle.setFilterDesPort("");
                         infoHandle.setFilterProtocol("");
                         infoHandle.setFilterDesIp("");
                         infoHandle.setFilterSrcIp("");
+                        infoHandle.clearAllPackets();
                         infoHandle.ShowAfterFilter();
                     }
                 });

@@ -43,7 +43,7 @@ public class PackageCatcher implements Runnable {
         while (true) {
             //每个数据包将被分派到抓包处理器Handler
             pcap.loop(cnt, myPcapHandler, infoHandle);
-            System.out.println("list的大小为：" + infoHandle.packetList.size());
+//            System.out.println("list的大小为：" + infoHandle.packetList.size());
         }
     }
 }
