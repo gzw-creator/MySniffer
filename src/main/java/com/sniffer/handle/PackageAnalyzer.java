@@ -1,11 +1,10 @@
 package com.sniffer.handle;
 import com.sniffer.utils.ProcessUtils;
-import org.jnetpcap.Pcap;
+
 import org.jnetpcap.nio.JBuffer;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.format.FormatUtils;
-import org.jnetpcap.PcapDumper;
-import org.jnetpcap.packet.JPacket;
+
 import org.jnetpcap.protocol.JProtocol;
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Arp;

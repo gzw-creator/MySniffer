@@ -425,7 +425,7 @@ public class MyUI extends JFrame {
                                     DateFormat df = new SimpleDateFormat("HH点mm秒ss");
                                     String name = df.format(date);
                                     try {
-                                        FileOutputStream fos = new FileOutputStream("..\\..\\" + name + ".txt");
+                                        FileOutputStream fos = new FileOutputStream("src/saveFile/" + name + ".txt");
                                         fos.write(text.getBytes());
                                         fos.close();
                                     } catch (Exception e) {
